@@ -1,36 +1,41 @@
 const request = require('request');
-//const fs = require('fs');
-const url = process.argv[2];
-const query = process.argv[3];
+//const url = process.argv[2];
+const baseUrl = 'https://api.thecatapi.com/v1/breeds/search/?q=';
 
-const breedFetcher = function(url, query) {
-  if (url === undefined) {
-    console.log(`URL may bot be undefined`);
+
+const fetchBreedDescription = function (breedName, callback) {
+  if (!callback) {
+    console.log('Error, please provide callback');
+    return;
   }
-
-  if (url !== undefined) {
-    request((url + query), (error, response, body) => {
-
-
-      if (error !== null) {
-        console.log(`Error: host invalid`);
-        console.log('Error:', error);
-        process.exit();
-      }
-
-      const data = JSON.parse(body);
-
-      if (data[0] !== undefined) {
-        let description = data[0].description;
-        console.log(`Respone:`, response.statusCode);
-        //console.log(data);
-        console.log(description);
-      } else {
-        console.log('Breed not found!');
-      }
-
-    });
+  
+  if (!breedName) {
+    callback(`URL may not be undefined`, null);
+    return;
   }
+ 
+  const url = baseUrl + breedName;
+
+  request((url), (error, response, body) => {
+
+
+    if (error !== null) {
+      callback(error, null);
+      return;
+    }
+
+    const data = JSON.parse(body);
+    if (!data[0]) {
+      callback('Breed not found', null);
+      return;
+    }
+
+    let description = data[0].description;
+    callback(null, description);
+  });
+
 };
 
-breedFetcher(url, query);
+//breedFetcher(url);
+
+module.exports = { fetchBreedDescription };
