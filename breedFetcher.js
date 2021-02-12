@@ -10,7 +10,7 @@ const fetchBreedDescription = function (breedName, callback) {
   }
   
   if (!breedName) {
-    callback(`URL may not be undefined`, null);
+    callback(`Name may not be undefined`, null);
     return;
   }
  
